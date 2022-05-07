@@ -41,9 +41,10 @@ class bwCGI:
         for k in self.cgi_headers:
             value = self.cgi_headers[k]
             if isinstance(value, list):
-                for v in value: print('{}: {}'.format(k, v))
+                for v in value:
+                    print(f'{k}: {v}')
             else:
-                print('{}: {}'.format(k, value))
+                print(f'{k}: {value}')
         print()
         self._header_state = True
         cgitb.enable()  # only after the header has been sent
@@ -51,10 +52,10 @@ class bwCGI:
     def set_cookie(self, key, value, **kwargs):
         ''' kwargs can include expires, path, or domain
         '''
-        cookie = '{}={}'.format(str(key), str(value))
+        cookie = f'{str(key)}={str(value)}'
         if kwargs.keys():
             for k in kwargs.keys():
-                cookie = '{}; {}={}'.format(cookie, k, kwargs[k])
+                cookie = f'{cookie}; {k}={kwargs[k]}'
         self.set_header('Set-Cookie', cookie)
 
     def parse_cookies(self):
@@ -75,7 +76,8 @@ class bwCGI:
                 l = os.environ[e]
                 break
         else: return '*** cannot make linkback ***'
-        if '?' in l: l = l[0:l.find('?')]
+        if '?' in l:
+            l = l[:l.find('?')]
         return os.path.basename(l)
 
     def vars(self):

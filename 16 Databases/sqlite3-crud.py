@@ -22,7 +22,7 @@ def delete(db, t1):
 def disp_rows(db):
     cursor = db.execute('select * from test order by t1')
     for row in cursor:
-        print('  {}: {}'.format(row['t1'], row['i1']))
+        print(f"  {row['t1']}: {row['i1']}")
 
 def main():
     db = sqlite3.connect('test.db')

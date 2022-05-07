@@ -13,7 +13,7 @@ class jumptable():
         elif 'default' in self.jumptable:
             self.jumptable['default']()
         else:
-            raise RuntimeError('undefined jump: {}'.format(index))
+            raise RuntimeError(f'undefined jump: {index}')
 
 def main():
     j = jumptable();

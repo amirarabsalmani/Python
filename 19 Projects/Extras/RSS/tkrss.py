@@ -32,7 +32,7 @@ class hyperlinkManager:
             add an action to the manager.
             return tags to use in text wiget
         '''
-        tag = 'hyper-{}'.format(len(self.links))
+        tag = f'hyper-{len(self.links)}'
         self.links[tag] = url
         return 'hyper', tag
 
@@ -128,7 +128,7 @@ class mainWindow(tkinter.Frame):
             separator = '--------------------\n'
             for r in feed.records():
                 textContainer.insert(tkinter.INSERT, separator, 'default')
-                if ['title'] and r['link']:
+                if r['link']:
                     textContainer.insert(tkinter.INSERT, r['title'] + '\n', hyperlink.add(r['link']))
                 else:
                     if r['title']: textContainer.insert(tkinter.INSERT, r['title'] + '\n', 'default')
@@ -155,7 +155,7 @@ class mainWindow(tkinter.Frame):
         itemText = self.listBox.get(recno)
         self._db.delById(self._db_index[int(recno)])
         self.fillListBox()
-        self.messageBox('Deleted from list: {}.'.format(itemText))
+        self.messageBox(f'Deleted from list: {itemText}.')
 
     def addFeed(self):
         url = self.varURL.get()
@@ -170,10 +170,10 @@ class mainWindow(tkinter.Frame):
                 self._db.insert(rec)
             except sqlite3.IntegrityError:  # duplicate key - update instead
                 self._db.update(rec)
-                self.messageBox('Udpated in list: {}.'.format(rec['title']))
+                self.messageBox(f"Udpated in list: {rec['title']}.")
             else:
                 self.fillListBox()
-                self.messageBox('Added to list: {}.'.format(rec['title']))
+                self.messageBox(f"Added to list: {rec['title']}.")
         except urllib.error.HTTPError as e: self.errorBox(e)
         except urllib.error.URLError as e: self.errorBox(e)
         except ValueError as e: self.errorBox(e)
@@ -190,7 +190,7 @@ class mainWindow(tkinter.Frame):
         messageWindow = tkinter.Toplevel()
         textContainer = tkinter.Message(messageWindow, width = 500, text = message)
         messageClose = tkinter.Button(messageWindow, text = 'Close', command = messageWindow.destroy)
-        messageWindow.title(TITLE + ' - ' + mTitle)
+        messageWindow.title(f'{TITLE} - {mTitle}')
         messageWindow.grid()
         textContainer.grid(sticky = 'ew')
         messageClose.grid()

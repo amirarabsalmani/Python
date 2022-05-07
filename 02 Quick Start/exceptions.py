@@ -5,6 +5,6 @@ try:
     for line in fh.readlines():
         print(line)
 except IOError as e:
-    print("Something bad as {} happened!". format(e))
+    print(f"Something bad as {e} happened!")
 
 print("OK lets rock")

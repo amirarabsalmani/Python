@@ -42,16 +42,18 @@ class numwords():
             s += self._words['ones'][n]
         elif n < 20:        # teens
             s += self._words['teens'][n - 10]
-        elif n < 100:       # tens
+        elif n < 100:   # tens
             m = n % 10
             t = n // 10
             s += self._words['tens'][t]
-            if m: s += '-' + numwords(m).numwords()    # recurse for remainder
-        elif n < 1000:      # hundreds
+            if m:
+                s += f'-{numwords(m).numwords()}'
+        elif n < 1000:  # hundreds
             m = n % 100
             t = n // 100
             s += self._words['ones'][t] + ' ' + self._words['range']['hundred']
-            if m: s += ' ' + numwords(m).numwords()    # recurse for remainder
+            if m:
+                s += f' {numwords(m).numwords()}'
         else:
             s += self._oor
         return s
@@ -123,7 +125,8 @@ def main():
             test()
         else:
             try: print(saytime(*(sys.argv[1].split(':'))).words())
-            except TypeError: print("Invalid time ({})".format(sys.argv[1]))
+            except TypeError:
+                print(f"Invalid time ({sys.argv[1]})")
     else:
         print(saytime_t(time.localtime()).words())
 

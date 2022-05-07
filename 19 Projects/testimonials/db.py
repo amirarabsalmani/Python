@@ -13,15 +13,11 @@ __version__ = "1.1.3"
 
 # namespace container for global variables
 g = dict(
-    VERSION = 'db.py version {}'.format(__version__),
-    config_file = 'db.conf',
-    template_ext = '.html',
-    table_name = 'testimonial',
-    stacks = dict(
-        messages = [],
-        errors = [],
-        hiddens = []
-    )
+    VERSION=f'db.py version {__version__}',
+    config_file='db.conf',
+    template_ext='.html',
+    table_name='testimonial',
+    stacks=dict(messages=[], errors=[], hiddens=[]),
 )
 
 def main():
@@ -74,11 +70,11 @@ def listrecs():
 
     # how many records do we have?
     count = db.countrecs()
-    message('There are {} records in the database. Add some more!'.format(count or 'no'))
+    message(f"There are {count or 'no'} records in the database. Add some more!")
 
     # how many pages do we have?
-    numpages = count // int(sql_limit)
-    if count % int(sql_limit): numpages += 1
+    numpages = count // sql_limit
+    if count % sql_limit: numpages += 1
 
     # what page is this?
     curpage = 0
@@ -112,20 +108,21 @@ def list_pagebar(pageno, numpages):
     linkback = g['linkback']
 
     if pageno > 0:
-        prevlink = '<a href="{}?pageno={}&prevpage=1">&lt;&lt;</a>'.format(linkback, pageno)
+        prevlink = f'<a href="{linkback}?pageno={pageno}&prevpage=1">&lt;&lt;</a>'
     if pageno < ( numpages - 1 ):
-        nextlink = '<a href="{}?pageno={}&nextpage=1">&gt;&gt;</a>'.format(linkback, pageno)
+        nextlink = f'<a href="{linkback}?pageno={pageno}&nextpage=1">&gt;&gt;</a>'
 
-    pagebar = ''
-    for n in range(0, numpages):
-        if n is pageno: pagebar += '<span class="n">{}</span>'.format(n + 1)
-        else: pagebar += '<a href="{}?jumppage={}">{}</a>'.format(linkback, n, n + 1)
+    pagebar = ''.join(
+        f'<span class="n">{n + 1}</span>'
+        if n is pageno
+        else f'<a href="{linkback}?jumppage={n}">{n + 1}</a>'
+        for n in range(numpages)
+    )
 
     var('prevlink', prevlink)
     var('nextlink', nextlink)
     var('pagebar', pagebar)
-    p = getpage('nextprev')
-    return p
+    return getpage('nextprev')
 
 def page(pagename, title = ''):
     ''' display a page from html template '''
@@ -140,7 +137,7 @@ def page(pagename, title = ''):
             tl.file(os.path.join(htmldir, p + file_ext))
             for line in tl.readlines(): print(line, end='') # lines are already terminated
         except IOError as e:
-            errorexit('Cannot open file ({})'.format(e))
+            errorexit(f'Cannot open file ({e})')
     exit()
 
 def getpage(p):
@@ -153,7 +150,7 @@ def getpage(p):
         tl.file(os.path.join(htmldir, p + file_ext))
         for line in tl.readlines(): a += line # lines are already terminated
     except IOError as e:
-        errorexit('Cannot open file ({})'.format(e))
+        errorexit(f'Cannot open file ({e})')
     return(a)
 
 ### actions
@@ -167,7 +164,7 @@ def add():
         byline = cgi.entity_encode(v.getfirst('byline'))
     )
     db.insert(rec)
-    message('Record ({}) added'.format(rec['byline']))
+    message(f"Record ({rec['byline']}) added")
     main_page()
 def edit():
     id = g['vars'].getfirst('id')
@@ -193,7 +190,7 @@ def delete_do():
     id = v.getfirst('id')
     byline = v.getfirst('byline')
     db.delete(id)
-    message('Record ({}) deleted'.format(byline))
+    message(f'Record ({byline}) deleted')
     main_page()
 
 def update():
@@ -208,7 +205,7 @@ def update():
         byline = cgi.entity_encode(v.getfirst('byline'))
     )
     db.update(id, rec)
-    message('Record ({}) updated'.format(rec['byline']))
+    message(f"Record ({rec['byline']}) updated")
     main_page()
 
 ### manage template variables
@@ -244,24 +241,29 @@ def hidden(n, v):
     g['stacks']['hiddens'].append([n, v])
 
 def set_stack_vars():
-    a = ''
-    for m in g['stacks']['messages']:
-        a += '<p class="message">{}</p>\n'.format(m)
+    a = ''.join(
+        '<p class="message">{}</p>\n'.format(m)
+        for m in g['stacks']['messages']
+    )
+
     var('MESSAGES', a)
-    a = ''
-    for m in g['stacks']['errors']:
-        a += '<p class="error">{}</p>\n'.format(m)
+    a = ''.join(
+        '<p class="error">{}</p>\n'.format(m) for m in g['stacks']['errors']
+    )
+
     var('ERRORS', a)
-    a = ''
-    for m in g['stacks']['hiddens']:
-        a += '<input type="hidden" name="{}" value="{}" />\n'.format(*m)
+    a = ''.join(
+        '<input type="hidden" name="{}" value="{}" />\n'.format(*m)
+        for m in g['stacks']['hiddens']
+    )
+
     var('hiddens', a)
 
 ### utilities
 def errorexit(e):
     me = os.path.basename(sys.argv[0])
     print('<p style="color:red">')
-    print('{}: {}'.format(me, e))
+    print(f'{me}: {e}')
     print('</p>')
     exit(0)
 

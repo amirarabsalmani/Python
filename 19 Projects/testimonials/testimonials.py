@@ -17,11 +17,7 @@ g = dict(
 def main():
     init()
     db = g['db']
-    idlist = []
-
-    # build a list of ids
-    for r in db.sql_query(' SELECT id FROM {} '.format(g['table_name'])):
-        idlist.append(r[0])
+    idlist = [r[0] for r in db.sql_query(f" SELECT id FROM {g['table_name']} ")]
 
     # get the count of records to display
     try: count = int(os.environ.get('QUERY_STRING', 3))
@@ -31,9 +27,13 @@ def main():
     # check that the count is not too big
     maxcount = idcount // 4
     if count > maxcount:
-        error('There are {} records in the database. '.format(idcount) +
-            'For good randomness, you cannot display more than {} at a time.'.format( maxcount )
+        error(
+            (
+                f'There are {idcount} records in the database. '
+                + f'For good randomness, you cannot display more than {maxcount} at a time.'
+            )
         )
+
 
     # build the list of random ids
     result_ids = []
@@ -51,8 +51,8 @@ def printrec(id):
     db = g['db']
     rec = db.getrec(id)
     print('<div class="testimonial">')
-    print('<p class="testimonial">{}</p>'.format(rec['testimonial']))
-    print('<p class="byline">&mdash;{}</p>'.format(rec['byline']))
+    print(f"""<p class="testimonial">{rec['testimonial']}</p>""")
+    print(f"""<p class="byline">&mdash;{rec['byline']}</p>""")
     print('</div>')
 
 

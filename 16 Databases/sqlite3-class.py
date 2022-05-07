@@ -13,30 +13,35 @@ class Database:
         self._db.commit()
 
     def insert(self, row):
-        self._db.execute('insert into {} (t1, i1) values (?, ?)'.format(self._table), (row['t1'], row['i1']))
+        self._db.execute(
+            f'insert into {self._table} (t1, i1) values (?, ?)',
+            (row['t1'], row['i1']),
+        )
+
         self._db.commit()
 
     def retrieve(self, key):
-        cursor = self._db.execute('select * from {} where t1 = ?'.format(self._table), (key,))
+        cursor = self._db.execute(f'select * from {self._table} where t1 = ?', (key,))
         return dict(cursor.fetchone())
 
     def update(self, row):
         self._db.execute(
-            'update {} set i1 = ? where t1 = ?'.format(self._table),
-            (row['i1'], row['t1']))
+            f'update {self._table} set i1 = ? where t1 = ?', (row['i1'], row['t1'])
+        )
+
         self._db.commit()
 
     def delete(self, key):
-        self._db.execute('delete from {} where t1 = ?'.format(self._table), (key,))
+        self._db.execute(f'delete from {self._table} where t1 = ?', (key,))
         self._db.commit()
 
     def disp_rows(self):
-        cursor = self._db.execute('select * from {} order by t1'.format(self._table))
+        cursor = self._db.execute(f'select * from {self._table} order by t1')
         for row in cursor:
-            print('  {}: {}'.format(row['t1'], row['i1']))
+            print(f"  {row['t1']}: {row['i1']}")
 
     def __iter__(self):
-        cursor = self._db.execute('select * from {} order by t1'.format(self._table))
+        cursor = self._db.execute(f'select * from {self._table} order by t1')
         for row in cursor:
             yield dict(row)
 

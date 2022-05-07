@@ -1,13 +1,7 @@
 #!/usr/local/bin/python3.4
 
 def isprime(n):
-    if n == 1:
-        return False
-    for x in range(2, n):
-        if n % x == 0:
-            return False
-    else:
-        return True
+    return False if n == 1 else all(n % x != 0 for x in range(2, n))
 
 def primes(n = 1):
    while(True):

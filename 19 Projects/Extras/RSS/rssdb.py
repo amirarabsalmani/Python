@@ -50,12 +50,11 @@ class rssDB:
     def list(self):
         c = self._db.cursor()
         c.execute('SELECT * FROM feed ORDER BY UPPER(title)')
-        for r in c:
-            yield r;
+        yield from c
 
 def main():
     db = rssDB()
-    print('all recs from {}:'.format(_DBFILE))
+    print(f'all recs from {_DBFILE}:')
     for r in db.list():
         print('{title} [{url}] {description}'.format(**r))
 

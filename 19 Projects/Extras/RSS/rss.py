@@ -50,21 +50,20 @@ class RSS:
     def link(self, n = None):
         if n is None: n = self.node[self._index]
         l = self.textOfNode('link', n).strip()
-        return l if l else self.attrOf(n, 'link', 'href').strip()
+        return l or self.attrOf(n, 'link', 'href').strip()
 
     def description(self, n = None):
         htmldata = HTMLDataOnly()
         for t in ('description', 'summary'):
-            text = self.textOfNode(t, n)
-            if text:
+            if text := self.textOfNode(t, n):
                 htmldata.feed(text)
                 return htmldata.get_data().strip()
         return ''
 
     def date(self):
         for t in ('date', 'pubDate'):
-            s = self.textOfNode(t)
-            if s: return s
+            if s := self.textOfNode(t):
+                return s
 
     def getElementsByTagName(self, node, tagName, possibleNamespaces=DEFAULT_NAMESPACES):
         for namespace in possibleNamespaces:
@@ -107,7 +106,7 @@ def main():
     ):
         rss = RSS(url)
         for r in rss.records():
-            print("node {} of {}".format(r['index'] + 1, len(rss.node)))
+            print(f"node {r['index'] + 1} of {len(rss.node)}")
             print(r['title'])
             print(r['link'])
             print(r['description'])

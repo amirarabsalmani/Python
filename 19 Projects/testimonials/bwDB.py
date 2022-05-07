@@ -39,8 +39,7 @@ class bwDB:
         '''
         c = self._db.cursor()
         c.execute(sql, params)
-        for r in c:
-            yield r
+        yield from c
 
     def sql_query_row(self, sql, params = ()):
         '''
@@ -71,7 +70,7 @@ class bwDB:
             db.getrec(id)
             get a single row, by id
         '''
-        query = 'SELECT * FROM {} WHERE id = ?'.format(self.table)
+        query = f'SELECT * FROM {self.table} WHERE id = ?'
         c = self._db.execute(query, (id,))
         return c.fetchone()
 
@@ -80,10 +79,8 @@ class bwDB:
             db.getrecs(id)
             get all rows, returns a generator of Row factories
         '''
-        query = 'SELECT * FROM {}'.format(self.table)
-        c = self._db.execute(query)
-        for r in c:
-            yield r
+        query = f'SELECT * FROM {self.table}'
+        yield from self._db.execute(query)
 
     def insert(self, rec):
         '''
@@ -94,11 +91,8 @@ class bwDB:
         '''
         klist = sorted(rec.keys())
         values = [ rec[v] for v in klist ]  # a list of values ordered by key
-        q = 'INSERT INTO {} ({}) VALUES ({})'.format(
-            self.table,
-            ', '.join(klist),
-            ', '.join('?' for i in range(len(values)))
-        )
+        q = f"INSERT INTO {self.table} ({', '.join(klist)}) VALUES ({', '.join('?' for _ in range(len(values)))})"
+
         c = self._db.execute(q, values)
         self._db.commit()
         return c.lastrowid
@@ -118,10 +112,8 @@ class bwDB:
                 del klist[i]
                 del values[i]
 
-        q = 'UPDATE {} SET {} WHERE id = ?'.format(
-            self.table,
-            ',  '.join(map(lambda str: '{} = ?'.format(str), klist))
-        )
+        q = f"UPDATE {self.table} SET {',  '.join(map(lambda str: f'{str} = ?', klist))} WHERE id = ?"
+
         self._db.execute(q, values + [ id ])
         self._db.commit()
 
@@ -130,7 +122,7 @@ class bwDB:
             db.delete(id)
             delete a row from the table, by id
         '''
-        query = 'DELETE FROM {} WHERE id = ?'.format(self.table)
+        query = f'DELETE FROM {self.table} WHERE id = ?'
         self._db.execute(query, [id])
         self._db.commit()
 
@@ -140,7 +132,7 @@ class bwDB:
             count the records in the table
             returns a single integer value
         '''
-        query = 'SELECT COUNT(*) FROM {}'.format(self.table)
+        query = f'SELECT COUNT(*) FROM {self.table}'
         c = self._db.cursor()
         c.execute(query)
         return c.fetchone()[0]
@@ -184,13 +176,13 @@ def test():
 
     print('version', __version__)
 
-    print('Create database file {} ...'.format(fn), end = '')
+    print(f'Create database file {fn} ...', end = '')
     db = bwDB( filename = fn, table = t )
     print('Done.')
 
     print('Create table ... ', end='')
-    db.sql_do(' DROP TABLE IF EXISTS {} '.format(t))
-    db.sql_do(' CREATE TABLE {} ( id INTEGER PRIMARY KEY, string TEXT ) '.format(t))
+    db.sql_do(f' DROP TABLE IF EXISTS {t} ')
+    db.sql_do(f' CREATE TABLE {t} ( id INTEGER PRIMARY KEY, string TEXT ) ')
     print('Done.')
 
     print('Insert into table ... ', end = '')
@@ -206,7 +198,7 @@ def test():
 
     print('Insert an extra row ... ', end = '')
     newid = db.insert( dict( string = 'extra' ) )
-    print('(id is {})'.format(newid))
+    print(f'(id is {newid})')
     print( dict( db.getrec(newid) ) )
     print('Now delete it')
     db.delete(newid)

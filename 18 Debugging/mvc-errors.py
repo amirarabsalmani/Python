@@ -13,7 +13,7 @@ class AnimalActions:
         if action in self.strings:
             return self.strings[action]
         else:
-            return 'The {} has no {}'.format(self.animalName(), action)
+            return f'The {self.animalName()} has no {action}'
 
     def animalName(self):
         return self.__class__.__name__.lower()

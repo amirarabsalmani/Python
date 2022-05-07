@@ -35,7 +35,7 @@ class tlStr:
         if k in self.__vars:
             return self.__vars[k]
         elif self.flags['showUnknowns']:
-            return '** UNK {} **'.format(k)
+            return f'** UNK {k} **'
         else:
             return None
 
@@ -87,15 +87,15 @@ def bwtl_test():
         ft.var('four', 'rubber chicken')
         ft.var('five', '55555')
 
-        print(str("ft.readline: " + ft.readline()).strip())
+        print(str(f"ft.readline: {ft.readline()}").strip())
 
         for l in ft.readlines():
             print(l.strip())
 
-        print('five is [{}]'.format(ft.var('five')))
+        print(f"five is [{ft.var('five')}]")
 
     except IOError as e:
-        print("Cannot open template file: {}".format(e))
+        print(f"Cannot open template file: {e}")
 
 if __name__ == "__main__": bwtl_test()
 

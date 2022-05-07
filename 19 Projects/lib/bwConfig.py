@@ -32,11 +32,11 @@ def test():
     try:
         conf = configFile(fn)
     except IOError as e:
-        print('could not open {},'.format(fn), e)
+        print(f'could not open {fn},', e)
     else:
         recs = conf.recs()
         for k in sorted(recs):
-            print('{} is [{}]'.format(k, recs[k]))
+            print(f'{k} is [{recs[k]}]')
 
 if __name__ == "__main__": test()
 
